@@ -1,0 +1,22 @@
+person
+car
+motorcycle
+bicycle
+truck
+delivery bag
+package
+doorstep
+mailbox
+storefront
+restaurant sign
+brand logo
+laptop
+chair
+document
+tree
+mountain
+temple
+mosque
+church
+selfie
+group

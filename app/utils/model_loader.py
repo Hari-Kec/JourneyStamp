@@ -1,6 +1,4 @@
 from ultralytics import YOLO
-from app.config import MODEL_PATH
 
-def load_model():
-    model = YOLO(MODEL_PATH)
-    return model
+def load_yolo_model(model_path):
+    return YOLO(model_path)

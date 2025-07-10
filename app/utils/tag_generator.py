@@ -1,39 +1,28 @@
-def enrich_tags(role, visual_tags, gps=None):
-    role = role.lower()
-    visual_tags = [tag.lower() for tag in visual_tags]
+from config import TAG_RULES
 
-    # Default output
-    final_tags = []
+def generate_final_tags(visual_tags, role):
+    visual_key = " ".join(sorted(set(tag.lower() for tag in visual_tags)))
 
-    # Rule examples (you can expand)
-    if role == "bank officer":
-        if "document" in visual_tags or "paper" in visual_tags:
-            final_tags.append("Document Pickup")
-        if "chair" in visual_tags or "desk" in visual_tags:
-            final_tags.append("Client Office")
-        if "man" in visual_tags or "person" in visual_tags:
-            final_tags.append("KYC Visit")
+    role_rules = TAG_RULES.get(role, {})
+    matched_tag = None
 
-    elif role == "delivery executive":
-        if "package" in visual_tags or "box" in visual_tags:
-            final_tags.append("Package Delivered")
-        if "door" in visual_tags or "home" in visual_tags:
-            final_tags.append("Client Home")
-    
-    elif role == "field agent":
-        if "pen" in visual_tags or "signature" in visual_tags:
-            final_tags.append("Form Filled")
-        if "car" in visual_tags or "road" in visual_tags:
-            final_tags.append("On-Site Visit")
-    
-    elif role == "surveyor":
-        if "building" in visual_tags or "structure" in visual_tags:
-            final_tags.append("Site Survey")
-        if "helmet" in visual_tags:
-            final_tags.append("Construction Visit")
+    for key, tags in role_rules.items():
+        if all(word.lower() in visual_key for word in key.split()):
+            matched_tag = tags
+            break
 
-    # Fallback tag if nothing matches
-    if not final_tags:
-        final_tags.append("General Field Visit")
+    if not matched_tag:
+        if "package delivery bag" in visual_key:
+            matched_tag = ["Package Delivered", "Client Doorstep", "Delivery Confirmation"]
+        elif "document laptop chair" in visual_key:
+            matched_tag = ["KYC Visit", "Form Filled", "Office Verification"]
+        elif "gate nameplate house" in visual_key:
+            matched_tag = ["Client Home", "Address Verified"]
+        elif "tree mountain hill" in visual_key:
+            matched_tag = ["Hiking", "Nature Trail", "Adventure"]
+        elif "temple mosque church" in visual_key:
+            matched_tag = ["Spiritual", "Religious Site Visit"]
+        elif "selfie group" in visual_key:
+            matched_tag = ["Selfie", "Team Photo", "Group Visit"]
 
-    return final_tags
+    return matched_tag or ["General"]
